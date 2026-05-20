@@ -13,7 +13,14 @@ Route::get('/api/announcements/for-page', [AnnouncementController::class, 'forPa
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 
-Route::get('/{slug}/styles.css', [PageController::class, 'styles'])->name('page.styles');
-Route::get('/{slug}/script.js',  [PageController::class, 'script'])->name('page.script');
+Route::get('/{slug}/styles.css', [PageController::class, 'styles'])
+    ->name('page.styles')
+    ->where('slug', '[a-z0-9\-]+');
 
-Route::get('/{slug}', [PageController::class, 'show'])->name('page.show');
+Route::get('/{slug}/script.js', [PageController::class, 'script'])
+    ->name('page.script')
+    ->where('slug', '[a-z0-9\-]+');
+
+Route::get('/{slug}', [PageController::class, 'show'])
+    ->name('page.show')
+    ->where('slug', '[a-z0-9\-]+');
