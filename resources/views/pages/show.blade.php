@@ -9,7 +9,6 @@
 @endsection
 
 @section('page-styles')
-    @vite(['resources/css/dynamic-pages.css'])
     @if ($page->css_content)
         <link rel="stylesheet" href="{{ route('page.styles', $page->slug) }}">
     @endif
