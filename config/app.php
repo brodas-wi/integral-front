@@ -124,7 +124,9 @@ return [
     ],
 
     'admin_url' => env('ADMIN_URL', ''),
-    
+
     'storage_url' => env('STORAGE_URL', env('APP_URL') . '/storage'),
+    
+    'admin_storage_url' => env('ADMIN_STORAGE_URL', env('STORAGE_URL', '')),
 
 ];
