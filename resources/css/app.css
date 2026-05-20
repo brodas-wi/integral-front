@@ -1,5 +1,8 @@
-@import "tailwindcss";
 @import "remixicon/fonts/remixicon.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 html {
     scroll-behavior: smooth;

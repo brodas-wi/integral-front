@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
     base: '/bancaintegral/public/build/',
@@ -9,7 +8,6 @@ export default defineConfig({
         port: 5174,
     },
     plugins: [
-        tailwindcss(),
         laravel({
             input: [
                 'resources/css/app.css',
