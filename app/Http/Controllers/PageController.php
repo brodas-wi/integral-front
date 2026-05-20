@@ -31,18 +31,34 @@ class PageController extends Controller
     {
         $page = Page::published()->where('slug', $slug)->firstOrFail();
 
+        $etag = md5($page->updated_at . $page->css_content);
+
+        if (request()->header('If-None-Match') === $etag) {
+            return response('', 304);
+        }
+
         return response($page->css_content ?? '', 200)
             ->header('Content-Type', 'text/css; charset=UTF-8')
-            ->header('Cache-Control', 'public, max-age=3600');
+            ->header('Cache-Control', 'no-cache, must-revalidate')
+            ->header('ETag', $etag)
+            ->header('Last-Modified', $page->updated_at->toRfc7231String());
     }
 
     public function script(string $slug)
     {
         $page = Page::published()->where('slug', $slug)->firstOrFail();
 
+        $etag = md5($page->updated_at . $page->js_content);
+
+        if (request()->header('If-None-Match') === $etag) {
+            return response('', 304);
+        }
+
         return response($page->js_content ?? '', 200)
             ->header('Content-Type', 'application/javascript; charset=UTF-8')
-            ->header('Cache-Control', 'public, max-age=3600');
+            ->header('Cache-Control', 'no-cache, must-revalidate')
+            ->header('ETag', $etag)
+            ->header('Last-Modified', $page->updated_at->toRfc7231String());
     }
 
     private function sanitizeContent(string $html): string

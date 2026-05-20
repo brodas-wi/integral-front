@@ -10,7 +10,7 @@
 
 @section('page-styles')
     @if ($page->css_content)
-        <link rel="stylesheet" href="{{ route('page.styles', $page->slug) }}">
+        <link rel="stylesheet" href="{{ route('page.styles', $page->slug) }}?v={{ $page->updated_at->timestamp }}">
     @endif
 @endsection
 
@@ -20,6 +20,6 @@
 
 @section('page-scripts')
     @if ($page->js_content)
-        <script type="module" src="{{ route('page.script', $page->slug) }}"></script>
+        <script type="module" src="{{ route('page.script', $page->slug) }}?v={{ $page->updated_at->timestamp }}"></script>
     @endif
 @endsection
