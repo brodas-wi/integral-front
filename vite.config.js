@@ -13,6 +13,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                'resources/css/dynamic-pages.css',
                 'resources/css/fonts/poppins.css',
                 'resources/js/app.js',
             ],

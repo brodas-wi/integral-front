@@ -28,6 +28,15 @@
       "app.css"
     ]
   },
+  "resources/css/dynamic-pages.css": {
+    "file": "assets/dynamic-pages-CSzWSk_V.css",
+    "src": "resources/css/dynamic-pages.css",
+    "isEntry": true,
+    "name": "dynamic-pages",
+    "names": [
+      "dynamic-pages.css"
+    ]
+  },
   "resources/css/fonts/poppins.css": {
     "file": "assets/poppins-CQf_wUzc.css",
     "src": "resources/css/fonts/poppins.css",
