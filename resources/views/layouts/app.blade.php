@@ -10,7 +10,8 @@
     <meta name="api-announcements-url" content="{{ route('api.announcements.for-page') }}">
     <meta name="app-url" content="{{ config('app.url') }}">
     <meta name="storage-url" content="{{ config('app.storage_url', config('app.url') . '/storage') }}">
-    
+
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <title>@yield('title', config('app.name'))</title>
 
     @yield('meta')
