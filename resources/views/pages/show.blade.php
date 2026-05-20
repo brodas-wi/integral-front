@@ -9,6 +9,12 @@
 @endsection
 
 @section('page-styles')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: { preflight: false }
+        }
+    </script>
     @if ($page->css_content)
         <link rel="stylesheet" href="{{ route('page.styles', $page->slug) }}">
     @endif
