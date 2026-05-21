@@ -18,12 +18,18 @@ class PageController extends Controller
         }
 
         $page->html_content = $this->sanitizeContent($page->html_content ?? '');
+
         if ($page->navbar) {
-            $page->navbar->html_content = $this->sanitizeContent($page->navbar->html_content ?? '');
+            $extracted = $this->extractStyles($this->sanitizeContent($page->navbar->html_content ?? ''));
+            $page->navbar->html_content  = $extracted['html'];
+            $page->navbar->inline_styles = $extracted['styles'];
         }
         if ($page->footer) {
-            $page->footer->html_content = $this->sanitizeContent($page->footer->html_content ?? '');
+            $extracted = $this->extractStyles($this->sanitizeContent($page->footer->html_content ?? ''));
+            $page->footer->html_content  = $extracted['html'];
+            $page->footer->inline_styles = $extracted['styles'];
         }
+
         return view('pages.show', compact('page'));
     }
 
@@ -35,12 +41,18 @@ class PageController extends Controller
             ->firstOrFail();
 
         $page->html_content = $this->sanitizeContent($page->html_content ?? '');
+
         if ($page->navbar) {
-            $page->navbar->html_content = $this->sanitizeContent($page->navbar->html_content ?? '');
+            $extracted = $this->extractStyles($this->sanitizeContent($page->navbar->html_content ?? ''));
+            $page->navbar->html_content  = $extracted['html'];
+            $page->navbar->inline_styles = $extracted['styles'];
         }
         if ($page->footer) {
-            $page->footer->html_content = $this->sanitizeContent($page->footer->html_content ?? '');
+            $extracted = $this->extractStyles($this->sanitizeContent($page->footer->html_content ?? ''));
+            $page->footer->html_content  = $extracted['html'];
+            $page->footer->inline_styles = $extracted['styles'];
         }
+
         return view('pages.show', compact('page'));
     }
 
@@ -82,22 +94,34 @@ class PageController extends Controller
     {
         $adminStorage = rtrim((string) config('app.storage_url', ''), '/');
 
-        if (empty($adminStorage)) {
-            return $html;
+        if (!empty($adminStorage)) {
+            $html = preg_replace(
+                '/\b(src|href)="\/storage\//i',
+                '$1="' . $adminStorage . '/',
+                $html
+            );
+
+            $html = str_replace(
+                ["url('/storage/", 'url("/storage/'],
+                ["url('" . $adminStorage . '/', 'url("' . $adminStorage . '/'],
+                $html
+            );
         }
 
-        $html = preg_replace(
-            '/\b(src|href)="\/storage\//i',
-            '$1="' . $adminStorage . '/',
-            $html
-        );
-
-        $html = str_replace(
-            ["url('/storage/", 'url("/storage/'],
-            ["url('" . $adminStorage . '/', 'url("' . $adminStorage . '/'],
-            $html
-        );
-
         return $html;
+    }
+
+    public function extractStyles(string $html): array
+    {
+        $styles = [];
+        $clean  = preg_replace_callback(
+            '/<style[^>]*>(.*?)<\/style>/is',
+            function ($m) use (&$styles) {
+                $styles[] = $m[1];
+                return '';
+            },
+            $html
+        );
+        return ['html' => $clean ?? $html, 'styles' => implode("\n", $styles)];
     }
 }

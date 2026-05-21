@@ -14,35 +14,35 @@
     @endif
 @endsection
 
+@section('navbar-styles')
+    @if ($page->navbar && $page->navbar->is_active && !empty($page->navbar->inline_styles))
+        <style>
+            {!! $page->navbar->inline_styles !!}
+        </style>
+    @endif
+@endsection
+
+@section('footer-styles')
+    @if ($page->footer && $page->footer->is_active && !empty($page->footer->inline_styles))
+        <style>
+            {!! $page->footer->inline_styles !!}
+        </style>
+    @endif
+@endsection
+
+@section('navbar')
+    @if ($page->navbar && $page->navbar->is_active)
+        {!! $page->navbar->html_content !!}
+    @endif
+@endsection
+
 @section('content')
     {!! $page->html_content !!}
 @endsection
 
-@section('navbar')
-    @if($page->navbar && $page->navbar->is_active)
-        @if($page->navbar->css_content)
-            <style>{!! $page->navbar->css_content !!}</style>
-        @endif
-
-        {!! $page->navbar->html_content !!}
-
-        @if($page->navbar->js_content)
-            <script>{!! $page->navbar->js_content !!}</script>
-        @endif
-    @endif
-@endsection
-
 @section('footer')
-    @if($page->footer && $page->footer->is_active)
-        @if($page->footer->css_content)
-            <style>{!! $page->footer->css_content !!}</style>
-        @endif
-
+    @if ($page->footer && $page->footer->is_active)
         {!! $page->footer->html_content !!}
-
-        @if($page->footer->js_content)
-            <script>{!! $page->footer->js_content !!}</script>
-        @endif
     @endif
 @endsection
 
