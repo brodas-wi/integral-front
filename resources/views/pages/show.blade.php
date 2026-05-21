@@ -18,6 +18,20 @@
     {!! $page->html_content !!}
 @endsection
 
+@section('footer')
+    @if($page->footer && $page->footer->is_active)
+        @if($page->footer->css_content)
+            <style>{!! $page->footer->css_content !!}</style>
+        @endif
+
+        {!! $page->footer->html_content !!}
+
+        @if($page->footer->js_content)
+            <script>{!! $page->footer->js_content !!}</script>
+        @endif
+    @endif
+@endsection
+
 @section('page-scripts')
     @if ($page->js_content)
         <script type="module" src="{{ route('page.script', $page->slug) }}?v={{ $page->updated_at->timestamp }}"></script>

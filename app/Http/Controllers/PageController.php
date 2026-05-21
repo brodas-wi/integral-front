@@ -9,6 +9,7 @@ class PageController extends Controller
     public function home()
     {
         $page = Page::published()
+            ->with('footer')
             ->whereIn('slug', ['home', 'inicio', 'index'])
             ->first();
 
@@ -22,7 +23,11 @@ class PageController extends Controller
 
     public function show(string $slug)
     {
-        $page = Page::published()->where('slug', $slug)->firstOrFail();
+        $page = Page::published()
+            ->with('footer')
+            ->where('slug', $slug)
+            ->firstOrFail();
+
         $page->html_content = $this->sanitizeContent($page->html_content ?? '');
         return view('pages.show', compact('page'));
     }

@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Page extends Model
 {
     protected $fillable = [
         'title',
         'slug',
+        'footer_id',
         'html_content',
         'css_content',
         'js_content',
@@ -33,5 +35,10 @@ class Page extends Model
     public function scopePublished($query)
     {
         return $query->where('is_published', true);
+    }
+
+    public function footer()
+    {
+        return $this->belongsTo(Footer::class);
     }
 }
