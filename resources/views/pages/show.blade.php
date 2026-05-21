@@ -53,6 +53,12 @@
 @endsection
 
 @section('page-scripts')
+    @if($page->navbar && $page->navbar->is_active && $page->navbar->js_content)
+        <script>{!! $page->navbar->js_content !!}</script>
+    @endif
+    @if($page->footer && $page->footer->is_active && $page->footer->js_content)
+        <script>{!! $page->footer->js_content !!}</script>
+    @endif
     @if ($page->js_content)
         <script type="module" src="{{ route('page.script', $page->slug) }}?v={{ $page->updated_at->timestamp }}"></script>
     @endif
