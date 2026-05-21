@@ -18,6 +18,20 @@
     {!! $page->html_content !!}
 @endsection
 
+@section('navbar')
+    @if($page->navbar && $page->navbar->is_active)
+        @if($page->navbar->css_content)
+            <style>{!! $page->navbar->css_content !!}</style>
+        @endif
+
+        {!! $page->navbar->html_content !!}
+
+        @if($page->navbar->js_content)
+            <script>{!! $page->navbar->js_content !!}</script>
+        @endif
+    @endif
+@endsection
+
 @section('footer')
     @if($page->footer && $page->footer->is_active)
         @if($page->footer->css_content)

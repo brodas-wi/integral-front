@@ -10,6 +10,7 @@ class Page extends Model
     protected $fillable = [
         'title',
         'slug',
+        'navbar_id',
         'footer_id',
         'html_content',
         'css_content',
@@ -35,6 +36,11 @@ class Page extends Model
     public function scopePublished($query)
     {
         return $query->where('is_published', true);
+    }
+
+    public function navbar()
+    {
+        return $this->belongsTo(Navbar::class);
     }
 
     public function footer()

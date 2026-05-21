@@ -9,7 +9,7 @@ class PageController extends Controller
     public function home()
     {
         $page = Page::published()
-            ->with('footer')
+            ->with(['navbar', 'footer'])
             ->whereIn('slug', ['home', 'inicio', 'index'])
             ->first();
 
@@ -18,17 +18,29 @@ class PageController extends Controller
         }
 
         $page->html_content = $this->sanitizeContent($page->html_content ?? '');
+        if ($page->navbar) {
+            $page->navbar->html_content = $this->sanitizeContent($page->navbar->html_content ?? '');
+        }
+        if ($page->footer) {
+            $page->footer->html_content = $this->sanitizeContent($page->footer->html_content ?? '');
+        }
         return view('pages.show', compact('page'));
     }
 
     public function show(string $slug)
     {
         $page = Page::published()
-            ->with('footer')
+            ->with(['navbar', 'footer'])
             ->where('slug', $slug)
             ->firstOrFail();
 
         $page->html_content = $this->sanitizeContent($page->html_content ?? '');
+        if ($page->navbar) {
+            $page->navbar->html_content = $this->sanitizeContent($page->navbar->html_content ?? '');
+        }
+        if ($page->footer) {
+            $page->footer->html_content = $this->sanitizeContent($page->footer->html_content ?? '');
+        }
         return view('pages.show', compact('page'));
     }
 
