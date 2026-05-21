@@ -15,18 +15,24 @@
 @endsection
 
 @section('navbar-styles')
-    @if ($page->navbar && $page->navbar->is_active && !empty($page->navbar->inline_styles))
-        <style>
-            {!! $page->navbar->inline_styles !!}
-        </style>
+    @if($page->navbar && $page->navbar->is_active)
+        @if($page->navbar->css_content)
+            <style>{!! $page->navbar->css_content !!}</style>
+        @endif
+        @if(!empty($page->navbar->inline_styles))
+            <style>{!! $page->navbar->inline_styles !!}</style>
+        @endif
     @endif
 @endsection
 
 @section('footer-styles')
-    @if ($page->footer && $page->footer->is_active && !empty($page->footer->inline_styles))
-        <style>
-            {!! $page->footer->inline_styles !!}
-        </style>
+    @if($page->footer && $page->footer->is_active)
+        @if($page->footer->css_content)
+            <style>{!! $page->footer->css_content !!}</style>
+        @endif
+        @if(!empty($page->footer->inline_styles))
+            <style>{!! $page->footer->inline_styles !!}</style>
+        @endif
     @endif
 @endsection
 

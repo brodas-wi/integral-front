@@ -111,7 +111,7 @@ class PageController extends Controller
         return $html;
     }
 
-    public function extractStyles(string $html): array
+    private function extractStyles(string $html): array
     {
         $styles = [];
         $clean  = preg_replace_callback(
