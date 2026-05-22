@@ -38,24 +38,33 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #003b71 0%, #e97300 100%);
+    background-color: #e97300;
+    padding: 2rem;
 }
 
 .coming-soon-content {
     text-align: center;
     color: #ffffff;
-    padding: 2rem;
+    max-width: 480px;
+}
+
+.coming-soon-icon {
+    font-size: 4rem;
+    line-height: 1;
+    margin-bottom: 1.5rem;
+    opacity: 0.9;
 }
 
 .coming-soon-content h1 {
-    font-size: clamp(2rem, 5vw, 4rem);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
     font-weight: 800;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .coming-soon-content p {
-    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-size: 1rem;
     opacity: 0.9;
+    margin-bottom: 2rem;
 }
 
 .error-page {

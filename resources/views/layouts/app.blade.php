@@ -11,6 +11,7 @@
     <meta name="storage-url" content="{{ config('app.storage_url', config('app.url') . '/storage') }}">
 
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    @vite(['resources/css/app.css'])
     <title>@yield('title', config('app.name'))</title>
 
     @yield('meta')
