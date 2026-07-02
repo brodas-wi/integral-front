@@ -34,6 +34,11 @@
             <style>{!! $page->footer->inline_styles !!}</style>
         @endif
     @endif
+    @foreach ($scripts as $script)
+        @if ($script->css_content)
+            <style>{!! $script->css_content !!}</style>
+        @endif
+    @endforeach
 @endsection
 
 @section('navbar')
@@ -62,4 +67,9 @@
     @if ($page->js_content)
         <script type="module" src="{{ route('page.script', $page->slug) }}?v={{ $page->updated_at->timestamp }}"></script>
     @endif
+    @foreach ($scripts as $script)
+        @if ($script->js_content)
+            <script>{!! $script->js_content !!}</script>
+        @endif
+    @endforeach
 @endsection

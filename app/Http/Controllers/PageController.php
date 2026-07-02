@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Page;
+use App\Models\Script;
 
 class PageController extends Controller
 {
@@ -30,7 +31,9 @@ class PageController extends Controller
             $page->footer->inline_styles = $extracted['styles'];
         }
 
-        return view('pages.show', compact('page'));
+        $scripts = Script::active()->forPage($page->slug)->get(['id', 'css_content', 'js_content']);
+
+        return view('pages.show', compact('page', 'scripts'));
     }
 
     public function show(string $slug)
@@ -53,7 +56,9 @@ class PageController extends Controller
             $page->footer->inline_styles = $extracted['styles'];
         }
 
-        return view('pages.show', compact('page'));
+        $scripts = Script::active()->forPage($page->slug)->get(['id', 'css_content', 'js_content']);
+
+        return view('pages.show', compact('page', 'scripts'));
     }
 
     public function styles(string $slug)
