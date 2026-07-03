@@ -4,6 +4,7 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ScriptController;
+use App\Http\Controllers\ExtraordinaryAssetController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/api/banners/active', [BannerController::class, 'active'])
@@ -14,6 +15,9 @@ Route::get('/api/announcements/for-page', [AnnouncementController::class, 'forPa
 
 Route::get('/api/scripts/active', [ScriptController::class, 'active'])
     ->name('api.scripts.active');
+
+Route::get('/api/assets/active', [ExtraordinaryAssetController::class, 'active'])
+    ->name('api.assets.active');
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 

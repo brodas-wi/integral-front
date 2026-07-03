@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="api-banners-url" content="{{ route('api.banners.active') }}">
     <meta name="api-announcements-url" content="{{ route('api.announcements.for-page') }}">
+    <meta name="api-assets-url" content="{{ route('api.assets.active') }}">
     <meta name="api-scripts-url" content="{{ route('api.scripts.active') }}">
     <meta name="app-url" content="{{ config('app.url') }}">
     <meta name="storage-url" content="{{ config('app.storage_url', config('app.url') . '/storage') }}">
