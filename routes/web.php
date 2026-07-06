@@ -3,6 +3,7 @@
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\MapLocationController;
 use App\Http\Controllers\ScriptController;
 use App\Http\Controllers\ExtraordinaryAssetController;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,9 @@ Route::get('/api/scripts/active', [ScriptController::class, 'active'])
 
 Route::get('/api/assets/active', [ExtraordinaryAssetController::class, 'active'])
     ->name('api.assets.active');
+
+Route::get('/api/map-locations', [MapLocationController::class, 'index'])
+    ->name('api.map-locations');
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 
