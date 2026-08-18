@@ -51,7 +51,7 @@ class SecurityHeaders
             $viteWs     = "ws://127.0.0.1:{$port}";
 
             $csp['script-src'][]  = $viteOrigin;
-            $csp['script-src'][]  = "'unsafe-inline'";
+            $csp['script-src'][]  = "'unsafe-inline'"; // necesario en dev por HMR de Vite
             $csp['style-src'][]   = $viteOrigin;
             $csp['style-src'][]   = "'unsafe-inline'";
             $csp['connect-src'][] = $viteOrigin;
@@ -60,16 +60,14 @@ class SecurityHeaders
 
             unset($csp['upgrade-insecure-requests']);
         } else {
-            $csp['script-src'][] = "'unsafe-inline'";
-            $csp['script-src'][] = "'unsafe-eval'";
+            $csp['style-src'][] = "'unsafe-inline'";
         }
 
         $response->headers->set('Content-Security-Policy', $this->buildCsp($csp));
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'DENY');
-        $response->headers->set('X-XSS-Protection', '1; mode=block');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-        $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+        $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
 
         if (!app()->environment('local')) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
