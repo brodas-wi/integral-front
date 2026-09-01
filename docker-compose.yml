@@ -1,26 +1,45 @@
-version: "3.8"
-
 services:
+  # Aplicación Laravel (PHP FPM)
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    restart: unless-stopped
+      target: production
+    container_name: integral_laravel_prod_app
+    restart: always
+    working_dir: /var/www
     volumes:
-      - storage_data:/var/www/html/storage
+      # En producción solo persistimos storage para uploads/logs
+      - storage_data:/var/www/storage
+      - app_public:/var/www/public
     env_file:
       - .env
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+    networks:
+      - dokploy-network
 
-  nginx:
+  # Servidor Web Nginx
+  web:
     image: nginx:alpine
-    restart: unless-stopped
-    expose:
-      - "80"
+    container_name: integral_nginx_prod_front
+    restart: always
+    ports:
+      - "8080:80"
     volumes:
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - storage_data:/var/www/html/storage
+      # Mapeo de código/public y logs
+      - app_public:/var/www/public:ro
+      - ./docker/nginx/prod.conf/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - app
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    driver: bridge
 
 volumes:
   storage_data:
+  app_public:
