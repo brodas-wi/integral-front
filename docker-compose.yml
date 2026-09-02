@@ -1,7 +1,5 @@
 version: "3.8"
-
 services:
-  # Aplicación Laravel (PHP FPM)
   app:
     build:
       context: .
@@ -11,7 +9,6 @@ services:
     restart: always
     working_dir: /var/www
     volumes:
-      # En producción solo persistimos storage para uploads/logs
       - storage_data:/var/www/storage
       - app_public:/var/www/public
     env_file:
@@ -21,27 +18,35 @@ services:
       APP_DEBUG: "false"
     networks:
       - dokploy-network
-
-  # Servidor Web Nginx
   web:
     image: nginx:alpine
     container_name: integral_nginx_prod_front
     restart: always
-    ports:
-      - "8080:80"
+    expose:
+      - "80"
     volumes:
-      # Mapeo de código/public y logs
       - app_public:/var/www/public:ro
       - ./docker/nginx/prod.conf/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - app
     networks:
       - dokploy-network
-
+    labels:
+      - traefik.docker.network=dokploy-network
+      - traefik.http.routers.integral-front-03exyr-40-web.rule=Host(`integraldemo.webinfo.sv`)
+      - traefik.http.routers.integral-front-03exyr-40-web.entrypoints=web
+      - traefik.http.services.integral-front-03exyr-40-web.loadbalancer.server.port=80
+      - traefik.http.routers.integral-front-03exyr-40-web.service=integral-front-03exyr-40-web
+      - traefik.http.routers.integral-front-03exyr-40-web.middlewares=redirect-to-https@file
+      - traefik.http.routers.integral-front-03exyr-40-websecure.rule=Host(`integraldemo.webinfo.sv`)
+      - traefik.http.routers.integral-front-03exyr-40-websecure.entrypoints=websecure
+      - traefik.http.services.integral-front-03exyr-40-websecure.loadbalancer.server.port=80
+      - traefik.http.routers.integral-front-03exyr-40-websecure.service=integral-front-03exyr-40-websecure
+      - traefik.http.routers.integral-front-03exyr-40-websecure.tls.certresolver=letsencrypt
+      - traefik.enable=true
 networks:
   dokploy-network:
-    driver: bridge
-
+    external: true
 volumes:
-  storage_data:
-  app_public:
+  storage_data: null
+  app_public: null
