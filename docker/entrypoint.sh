@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # El volumen storage_data solo persiste storage/; el resto de public/
