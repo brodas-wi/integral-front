@@ -272,6 +272,10 @@ export default {
         },
 
         { pattern: /^aspect-(auto|square|video)$/ },
+        {
+            pattern:
+                /^aspect-\[(1\/1|2\/1|1\/2|3\/2|2\/3|4\/3|3\/4|5\/4|4\/5|16\/9|9\/16|16\/10|10\/16|21\/9|3\/1|1\/3)\]$/,
+        },
         { pattern: /^object-(contain|cover|fill|none|scale-down)$/ },
         {
             pattern:
