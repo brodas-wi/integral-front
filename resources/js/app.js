@@ -1,5 +1,6 @@
 // Integral Public — Base JS
 import { initHeroPagesCarousels } from "./utils/hero-pages-carousel.js";
+import { initHeroCardsCarousels } from "./utils/hero-cards-carousel.js";
 
 // Smooth scroll
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,4 +15,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     initHeroPagesCarousels();
+    initHeroCardsCarousels();
 });
