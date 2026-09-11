@@ -13,14 +13,16 @@ export function initHeroPagesCarousels() {
         const nextBtn = wrap.querySelector(".hp-nav-next");
         const paginationEl = wrap.querySelector(".hp-dots");
 
-        new Swiper(swiperEl, {
+        const swiperInstance = new Swiper(swiperEl, {
             slidesPerView: 3,
             slidesPerGroup: 3,
             spaceBetween: 24,
             speed: 450,
+            watchOverflow: true,
             navigation: {
                 prevEl: prevBtn,
                 nextEl: nextBtn,
+                disabledClass: "hp-nav-disabled",
             },
             pagination: {
                 el: paginationEl,
@@ -34,5 +36,12 @@ export function initHeroPagesCarousels() {
                 992: { slidesPerView: 3, slidesPerGroup: 3 },
             },
         });
+
+        if (prevBtn) {
+            prevBtn.addEventListener("click", () => swiperInstance.slidePrev());
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener("click", () => swiperInstance.slideNext());
+        }
     });
 }
