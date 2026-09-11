@@ -1,5 +1,7 @@
 import Swiper from "swiper";
 import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 export function initHeroPagesCarousels() {
     document.querySelectorAll(".hp-carousel").forEach((wrap) => {
