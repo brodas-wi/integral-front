@@ -21,8 +21,8 @@ export function initHeroPagesCarousels() {
             slidesPerView: "auto",
             slidesPerGroupAuto: true,
             spaceBetween: 24,
-            speed: 600,
-            effect: "slide",
+            speed: 550,
+            cssMode: false,
             watchOverflow: true,
             centeredSlidesBounds: true,
             navigation: {
