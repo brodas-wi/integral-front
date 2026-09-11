@@ -18,6 +18,7 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
-        "remixicon": "^4.8.0"
+        "remixicon": "^4.8.0",
+        "swiper": "^14.2.0"
     }
 }

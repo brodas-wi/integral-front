@@ -1,9 +1,7 @@
-/**
- * Integral Public — Base JS
- * Solo inicialización mínima necesaria
- */
+// Integral Public — Base JS
+import { initHeroPagesCarousels } from "./utils/hero-pages-carousel.js";
 
-// Smooth scroll para anclas internas
+// Smooth scroll
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', (e) => {
@@ -14,4 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    initHeroPagesCarousels();
 });
