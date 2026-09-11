@@ -75,6 +75,7 @@ export function initHeroCardsCarousels() {
             speed: 550,
             watchOverflow: true,
             centerInsufficientSlides: true,
+            centeredSlides: false,
             navigation: {
                 prevEl: prevBtn,
                 nextEl: nextBtn,
