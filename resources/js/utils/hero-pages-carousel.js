@@ -1,4 +1,5 @@
 import Swiper from "swiper";
+import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
@@ -15,12 +16,15 @@ export function initHeroPagesCarousels() {
         const nextBtn = wrap.querySelector(".hp-nav-next");
         const paginationEl = wrap.querySelector(".hp-dots");
 
-        const swiperInstance = new Swiper(swiperEl, {
-            slidesPerView: 3,
-            slidesPerGroup: 3,
+        new Swiper(swiperEl, {
+            modules: [Navigation, Pagination],
+            slidesPerView: "auto",
+            slidesPerGroupAuto: true,
             spaceBetween: 24,
-            speed: 450,
+            speed: 600,
+            effect: "slide",
             watchOverflow: true,
+            centeredSlidesBounds: true,
             navigation: {
                 prevEl: prevBtn,
                 nextEl: nextBtn,
@@ -32,18 +36,6 @@ export function initHeroPagesCarousels() {
                 bulletClass: "hp-dot",
                 bulletActiveClass: "active",
             },
-            breakpoints: {
-                0: { slidesPerView: 1, slidesPerGroup: 1 },
-                640: { slidesPerView: 2, slidesPerGroup: 2 },
-                992: { slidesPerView: 3, slidesPerGroup: 3 },
-            },
         });
-
-        if (prevBtn) {
-            prevBtn.addEventListener("click", () => swiperInstance.slidePrev());
-        }
-        if (nextBtn) {
-            nextBtn.addEventListener("click", () => swiperInstance.slideNext());
-        }
     });
 }
