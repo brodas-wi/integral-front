@@ -54,21 +54,31 @@ export function initSplitCarousels() {
 
         let lastPerView = initialPerView;
         let resizeTimer = null;
+        let observer = null;
+        let isUpdating = false;
 
         const recalc = () => {
+            if (isUpdating) return;
             const newPerView = calcSlidesPerView(swiperEl.offsetWidth);
-            if (newPerView !== lastPerView) {
-                lastPerView = newPerView;
-                swiperInstance.params.slidesPerView = newPerView;
-                swiperInstance.params.slidesPerGroup = newPerView;
-                swiperInstance.update();
-            }
+            if (newPerView === lastPerView) return;
+
+            isUpdating = true;
+            lastPerView = newPerView;
+            swiperInstance.params.slidesPerView = newPerView;
+            swiperInstance.params.slidesPerGroup = newPerView;
+            swiperInstance.update();
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    isUpdating = false;
+                });
+            });
         };
 
         if (typeof ResizeObserver !== "undefined") {
-            const observer = new ResizeObserver(() => {
+            observer = new ResizeObserver(() => {
                 clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(recalc, 150);
+                resizeTimer = setTimeout(recalc, 200);
             });
             observer.observe(swiperEl);
         } else {
