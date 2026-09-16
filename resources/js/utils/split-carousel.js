@@ -8,6 +8,9 @@ const CARD_WIDTH = 260;
 const CARD_GAP = 24;
 
 function calcSlidesPerView(containerWidth) {
+    if (containerWidth < CARD_WIDTH + CARD_GAP) {
+        return 1;
+    }
     const perView = Math.floor(
         (containerWidth + CARD_GAP) / (CARD_WIDTH + CARD_GAP),
     );
@@ -52,17 +55,27 @@ export function initSplitCarousels() {
         let lastPerView = initialPerView;
         let resizeTimer = null;
 
-        window.addEventListener("resize", () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                const newPerView = calcSlidesPerView(swiperEl.offsetWidth);
-                if (newPerView !== lastPerView) {
-                    lastPerView = newPerView;
-                    swiperInstance.params.slidesPerView = newPerView;
-                    swiperInstance.params.slidesPerGroup = newPerView;
-                    swiperInstance.update();
-                }
-            }, 200);
-        });
+        const recalc = () => {
+            const newPerView = calcSlidesPerView(swiperEl.offsetWidth);
+            if (newPerView !== lastPerView) {
+                lastPerView = newPerView;
+                swiperInstance.params.slidesPerView = newPerView;
+                swiperInstance.params.slidesPerGroup = newPerView;
+                swiperInstance.update();
+            }
+        };
+
+        if (typeof ResizeObserver !== "undefined") {
+            const observer = new ResizeObserver(() => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(recalc, 150);
+            });
+            observer.observe(swiperEl);
+        } else {
+            window.addEventListener("resize", () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(recalc, 200);
+            });
+        }
     });
 }
