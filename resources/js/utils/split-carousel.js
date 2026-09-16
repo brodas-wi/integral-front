@@ -4,19 +4,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-const CARD_WIDTH = 260;
-const CARD_GAP = 24;
-
-function calcSlidesPerView(containerWidth) {
-    if (containerWidth < CARD_WIDTH + CARD_GAP) {
-        return 1;
-    }
-    const perView = Math.floor(
-        (containerWidth + CARD_GAP) / (CARD_WIDTH + CARD_GAP),
-    );
-    return Math.max(1, perView);
-}
-
 export function initSplitCarousels() {
     document.querySelectorAll(".sc-carousel").forEach((wrap) => {
         if (wrap.__scSwiperInit) return;
@@ -29,16 +16,16 @@ export function initSplitCarousels() {
         const nextBtn = wrap.querySelector(".sc-nav-next");
         const paginationEl = wrap.querySelector(".sc-dots");
 
-        const initialPerView = calcSlidesPerView(swiperEl.offsetWidth);
-
-        const swiperInstance = new Swiper(swiperEl, {
+        new Swiper(swiperEl, {
             modules: [Navigation, Pagination],
-            slidesPerView: initialPerView,
-            slidesPerGroup: initialPerView,
-            spaceBetween: CARD_GAP,
-            speed: 550,
+            slidesPerView: 1,
+            slidesPerGroup: 1,
+            spaceBetween: 24,
+            speed: 500,
             watchOverflow: true,
-            centerInsufficientSlides: true,
+            observer: true,
+            observeParents: true,
+            resizeObserver: true,
             navigation: {
                 prevEl: prevBtn,
                 nextEl: nextBtn,
@@ -50,42 +37,11 @@ export function initSplitCarousels() {
                 bulletClass: "sc-dot",
                 bulletActiveClass: "active",
             },
+            breakpoints: {
+                480: { slidesPerView: 2, slidesPerGroup: 2 },
+                992: { slidesPerView: 3, slidesPerGroup: 3 },
+                1400: { slidesPerView: 4, slidesPerGroup: 4 },
+            },
         });
-
-        let lastPerView = initialPerView;
-        let resizeTimer = null;
-        let observer = null;
-        let isUpdating = false;
-
-        const recalc = () => {
-            if (isUpdating) return;
-            const newPerView = calcSlidesPerView(swiperEl.offsetWidth);
-            if (newPerView === lastPerView) return;
-
-            isUpdating = true;
-            lastPerView = newPerView;
-            swiperInstance.params.slidesPerView = newPerView;
-            swiperInstance.params.slidesPerGroup = newPerView;
-            swiperInstance.update();
-
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    isUpdating = false;
-                });
-            });
-        };
-
-        if (typeof ResizeObserver !== "undefined") {
-            observer = new ResizeObserver(() => {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(recalc, 200);
-            });
-            observer.observe(swiperEl);
-        } else {
-            window.addEventListener("resize", () => {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(recalc, 200);
-            });
-        }
     });
 }
