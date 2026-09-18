@@ -2,6 +2,7 @@
 import { initHeroPagesCarousels } from "./utils/hero-pages-carousel.js";
 import { initHeroCardsCarousels } from "./utils/hero-cards-carousel.js";
 import { initSplitCarousels } from "./utils/split-carousel.js";
+import { initHeroVideoMuteButtons } from "./utils/hero-video.js";
 
 // Smooth scroll
 document.addEventListener('DOMContentLoaded', () => {
@@ -18,4 +19,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initHeroPagesCarousels();
     initHeroCardsCarousels();
     initSplitCarousels();
+    initHeroVideoMuteButtons();
 });
