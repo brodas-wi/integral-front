@@ -7,6 +7,20 @@ export function initHeroVideoMuteButtons() {
         const video = videoId ? document.getElementById(videoId) : null;
         if (!video) return;
 
+        video.controls = false;
+        video.removeAttribute("controls");
+        video.setAttribute("controlsList", "nodownload noplaybackrate");
+
+        const forceNoControls = new MutationObserver(() => {
+            if (video.hasAttribute("controls")) {
+                video.removeAttribute("controls");
+            }
+        });
+        forceNoControls.observe(video, {
+            attributes: true,
+            attributeFilter: ["controls"],
+        });
+
         const syncIcon = () => {
             const muted = video.muted;
             btn.dataset.muted = muted ? "true" : "false";
@@ -21,13 +35,19 @@ export function initHeroVideoMuteButtons() {
 
         btn.addEventListener("click", () => {
             video.muted = !video.muted;
+            video.controls = false;
+            video.removeAttribute("controls");
             if (!video.muted) {
                 video.play().catch(() => { });
             }
             syncIcon();
         });
 
-        video.addEventListener("volumechange", syncIcon);
+        video.addEventListener("volumechange", () => {
+            video.controls = false;
+            video.removeAttribute("controls");
+            syncIcon();
+        });
         syncIcon();
     });
 }
