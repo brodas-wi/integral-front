@@ -31,6 +31,57 @@ export default {
 
         {
             pattern:
+                /^(bg|text|border|ring|fill|stroke|outline|decoration)-brand-(blue|navy|orange|orange-light|orange-dark|sky)$/,
+            variants: [
+                "hover",
+                "focus",
+                "focus-visible",
+                "active",
+                "group-hover",
+                "group-focus",
+                "group-focus-visible",
+                "peer-hover",
+            ],
+        },
+        {
+            pattern:
+                /^(bg|text|border)-(white|black)$/,
+            variants: ["group-focus-visible", "focus-visible", "active"],
+        },
+        {
+            pattern: /^-translate-(x|y)-(0\.5|1|1\.5|2|3|4|5|6)$/,
+            variants: ["hover", "group-hover", "focus-visible", "group-focus-visible"],
+        },
+        {
+            pattern: /^scale-(90|95|100|105|110|125)$/,
+            variants: ["active", "focus-visible", "group-focus-visible"],
+        },
+        {
+            pattern: /^opacity-(0|50|75|80|90|100)$/,
+            variants: ["group-focus-visible", "focus-visible", "active"],
+        },
+        {
+            pattern: /^underline-offset-(2|4|8)$/,
+            variants: ["hover", "group-hover"],
+        },
+        {
+            pattern: /^(underline|no-underline)$/,
+            variants: ["group-hover", "focus-visible", "group-focus-visible"],
+        },
+        "motion-reduce:transition-none",
+        "motion-reduce:transform-none",
+        "focus-visible:outline-none",
+        "focus-visible:ring-2",
+        "focus-visible:ring-brand-orange",
+        "focus-visible:ring-offset-2",
+        "transition-transform",
+        "transition-colors",
+        "transition-shadow",
+        "transition-opacity",
+        "transition-all",
+
+        {
+            pattern:
                 /^p-(0|0\.5|1|1\.5|2|2\.5|3|3\.5|4|5|6|7|8|9|10|11|12|14|16|20|24|28|32|36|40|44|48|52|56|60|64|72|80|96)$/,
             variants: ["sm", "md", "lg", "xl", "2xl"],
         },
@@ -738,7 +789,18 @@ export default {
         "table-caption",
     ],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                brand: {
+                    blue: "#003B71",
+                    navy: "#002a52",
+                    orange: "#E97300",
+                    "orange-light": "#F07C28",
+                    "orange-dark": "#c96200",
+                    sky: "#dce8f5",
+                },
+            },
+        },
     },
     plugins: [],
 };
