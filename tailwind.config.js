@@ -28,6 +28,38 @@ export default {
         "hover:text-[#F07C28]",
         "hover:text-[#E97300]",
         "hover:text-[#ffffff]",
+        "bg-[#f0872a]",
+        "text-[#f0872a]",
+        "border-[#f0872a]",
+        "hover:bg-[#f0872a]",
+        "hover:text-[#f0872a]",
+        "bg-[#0d3f6a]",
+        "text-[#0d3f6a]",
+        "border-[#0d3f6a]",
+        "hover:bg-[#0d3f6a]",
+        "hover:text-[#0d3f6a]",
+        "bg-[#f4f4f4]",
+        "text-[#f4f4f4]",
+        "border-[#f4f4f4]",
+
+        {
+            pattern:
+                /^(bg|text|border|ring|fill|stroke|outline|decoration)-(primary|primary-dark|secondary|light)$/,
+            variants: [
+                "hover",
+                "focus",
+                "focus-visible",
+                "active",
+                "group-hover",
+                "group-focus",
+                "group-focus-visible",
+                "peer-hover",
+            ],
+        },
+        {
+            pattern: /^(bg|text|border)-(primary|secondary)\/(5|10|20|30|40|50|60|70|80|90)$/,
+            variants: ["hover", "group-hover"],
+        },
 
         {
             pattern:
@@ -791,6 +823,25 @@ export default {
     theme: {
         extend: {
             colors: {
+                primary: {
+                    DEFAULT: "#f0872a",
+                    dark: "#d97821",
+                },
+                secondary: "#0d3f6a",
+                light: "#f4f4f4",
+                gray: {
+                    DEFAULT: "#8f8f8f",
+                    50: "#fafafa",
+                    100: "#f4f4f4",
+                    200: "#e5e5e5",
+                    300: "#d4d4d4",
+                    400: "#a3a3a3",
+                    500: "#8f8f8f",
+                    600: "#737373",
+                    700: "#525252",
+                    800: "#404040",
+                    900: "#262626",
+                },
                 brand: {
                     blue: "#003B71",
                     navy: "#002a52",
