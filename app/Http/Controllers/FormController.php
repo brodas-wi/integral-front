@@ -69,7 +69,6 @@ class FormController extends Controller
             'search_text' => $built['search_text'],
             'status' => 'new',
             'source_url' => $sourceUrl && preg_match('/^https?:\/\//i', $sourceUrl) ? $sourceUrl : null,
-            'ip_address' => $request->ip(),
             'user_agent' => Str::limit((string) $request->userAgent(), 255, ''),
             'notify_status' => $notify ? 'pending' : 'not_applicable',
             'confirmation_status' => $confirm ? 'pending' : 'not_applicable',
