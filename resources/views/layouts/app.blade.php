@@ -10,6 +10,8 @@
     <meta name="api-assets-url" content="{{ route('api.assets.active') }}">
     <meta name="api-scripts-url" content="{{ route('api.scripts.active') }}">
     <meta name="map-locations-url" content="{{ route('api.map-locations') }}">
+    <meta name="api-forms-url" content="{{ url('/api/forms') }}">
+    <meta name="api-geography-url" content="{{ route('api.geography') }}">
     <meta name="app-url" content="{{ config('app.url') }}">
     <meta name="storage-url" content="{{ config('app.storage_url', config('app.url') . '/storage') }}">
 
