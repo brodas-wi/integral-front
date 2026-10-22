@@ -113,3 +113,13 @@ a {
 .error-btn:hover {
     background-color: #c96200;
 }
+
+[id] {
+    scroll-margin-top: 140px;
+}
+
+@media (max-width: 992px) {
+    [id] {
+        scroll-margin-top: 80px;
+    }
+}
