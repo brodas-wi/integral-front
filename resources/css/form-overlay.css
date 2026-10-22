@@ -355,6 +355,16 @@
     color: #e97300;
 }
 
+.fo-note {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: #9aa3af;
+    text-align: justify;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
 @keyframes fo-spin {
     to {
         transform: rotate(360deg);

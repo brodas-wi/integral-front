@@ -220,6 +220,12 @@ const BUILDERS = {
     location: buildLocation,
 };
 
+function createNote(field) {
+    return {
+        root: h("div", { class: "fo-field fo-w-full" }, h("p", { class: "fo-note", text: field.text })),
+    };
+}
+
 function createControl(field, uid, onEvent) {
     const id = `${uid}-${field.key}`;
     const required = field.required || field.type === "consent";
@@ -361,15 +367,18 @@ function showFailure(instance, retry, status) {
 }
 
 function renderForm(instance, slug, schema, prefill) {
-    const controls = schema.fields.map((field) =>
-        createControl(field, instance.uid, (control, kind) => {
-            if (kind === "input") instance.markDirty();
-            const hasError = control.root.classList.contains("fo-invalid");
+    const items = schema.fields.map((field) =>
+        field.type === "note"
+            ? createNote(field)
+            : createControl(field, instance.uid, (control, kind) => {
+                  if (kind === "input") instance.markDirty();
+                  const hasError = control.root.classList.contains("fo-invalid");
 
-            if (kind === "blur" && !isEmpty(control.field, control.getValue())) check(control);
-            else if (kind === "input" && hasError) check(control);
-        }),
+                  if (kind === "blur" && !isEmpty(control.field, control.getValue())) check(control);
+                  else if (kind === "input" && hasError) check(control);
+              }),
     );
+    const controls = items.filter((item) => item.field);
 
     const byKey = new Map(controls.map((control) => [control.field.key, control]));
 
@@ -396,7 +405,7 @@ function renderForm(instance, slug, schema, prefill) {
     const form = h(
         "form",
         { class: "fo-form", novalidate: true },
-        h("div", { class: "fo-grid" }, ...controls.map((control) => control.root)),
+        h("div", { class: "fo-grid" }, ...items.map((item) => item.root)),
         honeypot,
         alert,
         h("div", { class: "fo-actions" }, submit),

@@ -16,6 +16,10 @@ class SubmissionBuilder
         $answers = [];
 
         foreach ($version->fields as $field) {
+            if ($field['type'] === 'note') {
+                continue;
+            }
+
             [$value, $display] = $this->resolve($field, $values[$field['key']] ?? null);
 
             $answers[] = [
