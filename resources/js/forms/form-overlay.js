@@ -576,8 +576,8 @@ export async function mountForm(container, slug, { prefill = {} } = {}) {
         },
         isClosed: () => !container.isConnected,
         showThanks: (thanks) => {
-            container.style.minHeight = `${container.offsetHeight}px`;
-            content.replaceChildren(
+            container.classList.add("inf-done");
+            container.append(
                 h(
                     "div",
                     { class: "inf-thanks", role: "status" },
@@ -587,7 +587,8 @@ export async function mountForm(container, slug, { prefill = {} } = {}) {
             );
         },
         close: () => {
-            container.style.minHeight = "";
+            container.classList.remove("inf-done");
+            container.querySelector(":scope > .inf-thanks")?.remove();
             return loadInto(instance, slug, prefill);
         },
     };
