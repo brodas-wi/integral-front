@@ -49,8 +49,6 @@ COPY . /var/www
 # Copiar los assets compilados desde la ETAPA 1
 COPY --from=frontend-builder /app/public/build /var/www/public/build
 
-RUN grep -n "APP_NAME" .env || true
-
 # Instalar dependencias PHP de producción (sin dev)
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
