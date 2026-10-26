@@ -17,7 +17,7 @@
 
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     @vite(['resources/css/app.css'])
-    <title>@yield('title', config('app.name'))</title>
+    <title>@hasSection('title')@yield('title') - @endif{{ config('app.name') }}</title>
 
     @yield('meta')
 
