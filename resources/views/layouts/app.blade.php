@@ -17,7 +17,13 @@
 
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     @vite(['resources/css/app.css'])
-    <title>@hasSection('title')@yield('title') - @endif{{ config('app.name') }}</title>
+    <title>
+        @hasSection('title')
+            @yield('title') -
+        @elseif (filled($page->title ?? null))
+            {{ $page->title }} -
+        @endif{{ config('app.site_name') }}
+    </title>
 
     @yield('meta')
 

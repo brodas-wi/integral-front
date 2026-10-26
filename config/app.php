@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'site_name' => 'Banco Integral',
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
