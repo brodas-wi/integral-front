@@ -235,11 +235,11 @@ function createControl(field, uid, onEvent) {
     const notify = (kind) => onEvent(control, kind);
     control = (BUILDERS[field.type] ?? buildText)(field, id, notify, required);
 
-    const labelText = field.label + (required ? " *" : "");
+    const star = required ? h("span", { class: "fo-req", text: "*" }) : null;
     const parts = [];
 
-    if (!control.mode) parts.push(h("label", { class: "fo-label", for: id, text: labelText }));
-    else if (control.mode === "group") parts.push(h("span", { class: "fo-label", id: `${id}-label`, text: labelText }));
+    if (!control.mode) parts.push(h("label", { class: "fo-label", for: id }, field.label, required && " ", star));
+    else if (control.mode === "group") parts.push(h("span", { class: "fo-label", id: `${id}-label` }, field.label, required && " ", star));
 
     parts.push(control.node);
     if (field.help) parts.push(h("p", { class: "fo-help", text: field.help }));
@@ -308,6 +308,17 @@ function createShell(trigger) {
             trigger?.focus?.({ preventScroll: true });
         },
         isClosed: () => closed,
+        showThanks: (thanks) => {
+            card.classList.add("fo-done");
+            card.append(
+                h(
+                    "div",
+                    { class: "fo-thanks", role: "status" },
+                    h("p", { class: "fo-thanks-title", text: thanks.title || "¡Gracias!" }),
+                    h("p", { class: "fo-thanks-sub", text: thanks.subtitle || "Hemos recibido tu registro." }),
+                ),
+            );
+        },
         reduceMotion,
     };
 
@@ -391,8 +402,13 @@ function renderForm(instance, slug, schema, prefill) {
     Object.entries(prefill).forEach(([key, value]) => byKey.get(key)?.setValue(value));
 
     const titleId = `${instance.uid}-title`;
-    instance.card.setAttribute("aria-labelledby", titleId);
-    instance.card.removeAttribute("aria-label");
+    if (instance.inline) {
+        instance.card.setAttribute("role", "region");
+        instance.card.setAttribute("aria-label", schema.title);
+    } else {
+        instance.card.setAttribute("aria-labelledby", titleId);
+        instance.card.removeAttribute("aria-label");
+    }
 
     const alert = h("p", { class: "fo-alert", role: "alert", hidden: true });
     const submit = h("button", { type: "submit", class: "fo-submit", text: schema.submit_label || "Enviar" });
@@ -414,7 +430,7 @@ function renderForm(instance, slug, schema, prefill) {
     const header = [h("h2", { class: "fo-title", id: titleId, text: schema.title })];
     if (schema.description) header.push(h("p", { class: "fo-desc", text: schema.description }));
 
-    instance.content.replaceChildren(...header, form);
+    instance.content.replaceChildren(...(instance.inline ? [] : header), form);
 
     const openedAt = Date.now();
     let sending = false;
@@ -426,15 +442,7 @@ function renderForm(instance, slug, schema, prefill) {
 
     function showThanks() {
         const thanks = schema.thanks || {};
-        instance.card.classList.add("fo-done");
-        instance.card.append(
-            h(
-                "div",
-                { class: "fo-thanks", role: "status" },
-                h("p", { class: "fo-thanks-title", text: thanks.title || "¡Gracias!" }),
-                h("p", { class: "fo-thanks-sub", text: thanks.subtitle || "Hemos recibido tu registro." }),
-            ),
-        );
+        instance.showThanks(thanks);
 
         const seconds = Math.min(60, Math.max(1, Number(thanks.seconds) || 6));
         instance.setTimer(() => {
@@ -519,7 +527,22 @@ function renderForm(instance, slug, schema, prefill) {
         }
     });
 
-    (controls[0]?.focusEl ?? form).focus({ preventScroll: true });
+    if (!instance.inline) (controls[0]?.focusEl ?? form).focus({ preventScroll: true });
+}
+
+async function loadInto(instance, slug, prefill) {
+    showLoading(instance);
+
+    try {
+        const schema = await getJson(`${formsUrl()}/${slug}`);
+        if (schema.fields.some((field) => field.type === "location")) await loadGeography();
+        if (instance.isClosed()) return;
+        renderForm(instance, slug, schema, prefill);
+    } catch (error) {
+        if (!instance.isClosed()) {
+            showFailure(instance, () => loadInto(instance, slug, prefill), error.status);
+        }
+    }
 }
 
 export async function openForm(slug, { prefill = {}, trigger = null } = {}) {
@@ -528,18 +551,46 @@ export async function openForm(slug, { prefill = {}, trigger = null } = {}) {
     const instance = createShell(trigger);
     active = instance;
 
-    const run = async () => {
-        showLoading(instance);
+    await loadInto(instance, slug, prefill);
+}
 
-        try {
-            const schema = await getJson(`${formsUrl()}/${slug}`);
-            if (schema.fields.some((field) => field.type === "location")) await loadGeography();
-            if (instance.isClosed()) return;
-            renderForm(instance, slug, schema, prefill);
-        } catch (error) {
-            if (!instance.isClosed()) showFailure(instance, run, error.status);
-        }
+export async function mountForm(container, slug, { prefill = {} } = {}) {
+    if (container.dataset.foMounted) return;
+    container.dataset.foMounted = "true";
+
+    const content = h("div", { class: "inf-content" });
+    container.replaceChildren(content);
+
+    let timer = null;
+
+    const instance = {
+        uid: `fo${++counter}`,
+        inline: true,
+        card: container,
+        content,
+        reduceMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
+        markDirty: () => {},
+        setTimer: (callback, ms) => {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        },
+        isClosed: () => !container.isConnected,
+        showThanks: (thanks) => {
+            container.style.minHeight = `${container.offsetHeight}px`;
+            content.replaceChildren(
+                h(
+                    "div",
+                    { class: "inf-thanks", role: "status" },
+                    h("p", { class: "inf-thanks-title", text: thanks.title || "¡Gracias!" }),
+                    h("p", { class: "inf-thanks-sub", text: thanks.subtitle || "Hemos recibido tu registro." }),
+                ),
+            );
+        },
+        close: () => {
+            container.style.minHeight = "";
+            return loadInto(instance, slug, prefill);
+        },
     };
 
-    await run();
+    await loadInto(instance, slug, prefill);
 }

@@ -56,6 +56,19 @@ function openFromUrl() {
     open(slug, prefill);
 }
 
+const INLINE = "[data-inline-form]";
+
+function mountInlineForms() {
+    document.querySelectorAll(INLINE).forEach((container) => {
+        const slug = (container.getAttribute("data-inline-form") || "").trim();
+        if (!SLUG.test(slug)) return;
+
+        load()
+            .then((module) => module.mountForm(container, slug))
+            .catch((error) => console.error("[Forms] No se pudo montar el formulario:", error));
+    });
+}
+
 export function initFormOverlay() {
     document.addEventListener("click", (event) => {
         if (event.defaultPrevented || event.button !== 0) return;
@@ -74,10 +87,11 @@ export function initFormOverlay() {
     document.addEventListener(
         "pointerover",
         (event) => {
-            if (event.target.closest(SELECTOR)) load().catch(() => {});
+            if (event.target.closest(SELECTOR)) load().catch(() => { });
         },
         { passive: true },
     );
 
     openFromUrl();
+    mountInlineForms();
 }
