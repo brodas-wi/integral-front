@@ -117,6 +117,7 @@ export function validate(field, value) {
                 : `Escribe un número con hasta ${field.decimals ?? 2} decimales.`;
         }
         case "select":
+        case "agency":
             return field.options.some((option) => option.value === text) ? "" : "Elige una opción válida.";
         case "location":
             if (!text.department) return "Elige un departamento.";

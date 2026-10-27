@@ -393,3 +393,21 @@
         animation-duration: 2.4s;
     }
 }
+
+.fo-consent .fo-link {
+    color: #e97300;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.15s ease;
+}
+
+.fo-consent .fo-link:hover {
+    color: #c96200;
+}
+
+.fo-consent .fo-link:focus-visible {
+    outline: 2px solid #e97300;
+    outline-offset: 2px;
+    border-radius: 2px;
+}

@@ -151,13 +151,34 @@ function buildCheckboxes(field, id, notify) {
     };
 }
 
+const CONSENT_LINK = /\[([^\]]+)\]\(([^)\s]+)\)/g;
+
+function consentNodes(text) {
+    const nodes = [];
+    let last = 0;
+
+    for (const match of text.matchAll(CONSENT_LINK)) {
+        const [full, label, url] = match;
+        if (match.index > last) nodes.push(text.slice(last, match.index));
+        nodes.push(
+            isSafeRedirect(url)
+                ? h("a", { class: "fo-link", href: url, target: "_blank", rel: "noopener noreferrer", text: label })
+                : label,
+        );
+        last = match.index + full.length;
+    }
+
+    if (last < text.length) nodes.push(text.slice(last));
+    return nodes;
+}
+
 function buildConsent(field, id, notify) {
     const input = h("input", { type: "checkbox", id, name: field.key });
     input.addEventListener("change", () => notify("input"));
 
     return {
         mode: "none",
-        node: h("label", { class: "fo-consent", for: id }, input, h("span", { text: field.text || field.label })),
+        node: h("label", { class: "fo-consent", for: id }, input, h("span", {}, ...consentNodes(field.text || field.label))),
         focusEl: input,
         getValue: () => input.checked,
         setValue: () => {},
@@ -215,6 +236,7 @@ function buildLocation(field, id, notify, required) {
 
 const BUILDERS = {
     select: buildSelect,
+    agency: buildSelect,
     checkbox_group: buildCheckboxes,
     consent: buildConsent,
     location: buildLocation,

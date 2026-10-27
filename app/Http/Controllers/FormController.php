@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Data\ElSalvadorGeography;
+use App\Models\Agency;
 use App\Models\Form;
 use App\Models\FormSubmission;
 use App\Models\FormVersion;
@@ -23,7 +24,7 @@ class FormController extends Controller
             'title' => $version->title,
             'description' => $version->description,
             'submit_label' => $version->submit_label,
-            'fields' => $version->fields,
+            'fields' => $this->withAgencyOptions($version->fields),
             'thanks' => $version->settings['thanks'] ?? [],
         ])->header('Cache-Control', 'no-cache, must-revalidate');
     }
@@ -83,6 +84,24 @@ class FormController extends Controller
             ->mapWithKeys(fn (string $department) => [$department => ElSalvadorGeography::municipalities($department)]);
 
         return response()->json($map)->header('Cache-Control', 'public, max-age=86400');
+    }
+
+    private function withAgencyOptions(array $fields): array
+    {
+        if (!collect($fields)->contains(fn ($field) => $field['type'] === 'agency')) {
+            return $fields;
+        }
+
+        $options = Agency::active()
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Agency $agency) => ['value' => (string) $agency->id, 'label' => $agency->name])
+            ->all();
+
+        return array_map(
+            fn (array $field) => $field['type'] === 'agency' ? ['options' => $options] + $field : $field,
+            $fields,
+        );
     }
 
     private function activeForm(string $slug): Form

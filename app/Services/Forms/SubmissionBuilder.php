@@ -3,6 +3,7 @@
 namespace App\Services\Forms;
 
 use App\Data\ElSalvadorGeography;
+use App\Models\Agency;
 use App\Models\FormVersion;
 use Illuminate\Validation\ValidationException;
 
@@ -25,7 +26,7 @@ class SubmissionBuilder
             $answers[] = [
                 'key' => $field['key'],
                 'type' => $field['type'],
-                'label' => $field['type'] === 'consent' ? ($field['text'] ?? $field['label']) : $field['label'],
+                'label' => $field['type'] === 'consent' ? $this->plain($field['text'] ?? $field['label']) : $field['label'],
                 'value' => $value,
                 'display' => $display,
             ];
@@ -50,6 +51,7 @@ class SubmissionBuilder
             'checkbox_group' => $this->checkboxes($field, $raw),
             'consent' => $this->consent($field, $raw),
             'location' => $this->location($field, $raw),
+            'agency' => $this->agency($field, $raw),
             default => $this->scalar($field, $raw),
         };
     }
@@ -214,6 +216,31 @@ class SubmissionBuilder
             ['department' => $department, 'municipality' => $municipality],
             "{$department} / {$municipality}",
         ];
+    }
+
+    private function agency(array $field, mixed $raw): array
+    {
+        $key = $field['key'];
+        $id = is_scalar($raw) ? $this->clean((string) $raw) : '';
+
+        if ($id === '') {
+            return ($field['required'] ?? false)
+                ? $this->fail($key, 'Este campo es obligatorio.')
+                : [null, ''];
+        }
+
+        $agency = preg_match('/^\d{1,10}$/', $id)
+            ? Agency::active()->find((int) $id, ['id', 'name'])
+            : null;
+
+        return $agency
+            ? [(string) $agency->id, $agency->name]
+            : $this->fail($key, 'Elige una agencia válida.');
+    }
+
+    private function plain(string $text): string
+    {
+        return preg_replace('/\[([^\]]*)\]\([^)]*\)/u', '$1', $text) ?? $text;
     }
 
     private function email(FormVersion $version, array $answers): ?string
