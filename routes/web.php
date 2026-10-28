@@ -7,6 +7,7 @@ use App\Http\Controllers\MapLocationController;
 use App\Http\Controllers\ScriptController;
 use App\Http\Controllers\ExtraordinaryAssetController;
 use App\Http\Controllers\FormController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/api/banners/active', [BannerController::class, 'active'])
@@ -49,3 +50,7 @@ Route::get('/{slug}/script.js', [PageController::class, 'script'])
 Route::get('/{slug}', [PageController::class, 'show'])
     ->name('page.show')
     ->where('slug', '[a-z0-9\-]+');
+
+Route::get('/api/search', [SearchController::class, 'index'])
+    ->middleware('throttle:30,1')
+    ->name('api.search');
