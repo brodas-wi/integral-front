@@ -1,10 +1,8 @@
 version: "3.8"
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
+    image: ghcr.io/brodas-wi/NOMBRE-DEL-REPO-FRONT:latest
+    pull_policy: always
     container_name: integral_laravel_prod_app
     restart: always
     working_dir: /var/www
