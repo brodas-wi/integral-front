@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   app:
-    image: ghcr.io/brodas-wi/NOMBRE-DEL-REPO-FRONT:latest
+    image: ghcr.io/brodas-wi/integral-front:latest
     pull_policy: always
     container_name: integral_laravel_prod_app
     restart: always
