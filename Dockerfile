@@ -17,7 +17,6 @@ FROM php:8.5-fpm-alpine AS production
 RUN apk add --no-cache \
     git \
     curl \
-    libpng-dev \
     libxml2-dev \
     zip \
     unzip \
@@ -28,10 +27,8 @@ RUN apk add --no-cache \
 RUN docker-php-ext-install -j"$(nproc)" \
     pdo_mysql \
     mbstring \
-    exif \
     pcntl \
     bcmath \
-    gd \
     zip \
     intl
 
