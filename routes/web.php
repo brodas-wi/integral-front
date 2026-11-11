@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AgencyController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\PageController;
@@ -24,6 +25,9 @@ Route::get('/api/assets/active', [ExtraordinaryAssetController::class, 'active']
 
 Route::get('/api/map-locations', [MapLocationController::class, 'index'])
     ->name('api.map-locations');
+
+Route::get('/api/agencies/list', [AgencyController::class, 'list'])
+    ->name('api.agencies.list');
 
 Route::get('/api/geography', [FormController::class, 'geography'])
     ->name('api.geography');

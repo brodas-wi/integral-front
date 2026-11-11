@@ -8,6 +8,7 @@
     <meta name="api-banners-url" content="{{ route('api.banners.active') }}">
     <meta name="api-announcements-url" content="{{ route('api.announcements.for-page') }}">
     <meta name="api-assets-url" content="{{ route('api.assets.active') }}">
+    <meta name="api-agencies-url" content="{{ route('api.agencies.list') }}">
     <meta name="api-scripts-url" content="{{ route('api.scripts.active') }}">
     <meta name="map-locations-url" content="{{ route('api.map-locations') }}">
     <meta name="api-forms-url" content="{{ url('/api/forms') }}">
