@@ -7,7 +7,9 @@ use App\Models\Agency;
 use App\Models\Form;
 use App\Models\FormSubmission;
 use App\Models\FormVersion;
+use App\Services\Forms\CorrelativeGenerator;
 use App\Services\Forms\SubmissionBuilder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -29,9 +31,9 @@ class FormController extends Controller
         ])->header('Cache-Control', 'no-cache, must-revalidate');
     }
 
-    public function submit(Request $request, string $slug, SubmissionBuilder $builder): JsonResponse
+    public function submit(Request $request, string $slug, SubmissionBuilder $builder, CorrelativeGenerator $correlatives): JsonResponse
     {
-        abort_if((int) $request->header('Content-Length') > 65536, 413, 'La solicitud es demasiado grande.');
+        abort_if(strlen($request->getContent()) > 65536, 413, 'La solicitud es demasiado grande.');
 
         $form = $this->activeForm($slug);
 
@@ -43,7 +45,7 @@ class FormController extends Controller
             'source_url' => ['nullable', 'string', 'max:2048'],
         ]);
 
-        if (filled($data['website'] ?? null) || ($data['elapsed_ms'] ?? 5000) < 2500) {
+        if (filled($data['website'] ?? null) || ($data['elapsed_ms'] ?? 0) < 2500) {
             return response()->json(['success' => true], 201);
         }
 
@@ -57,23 +59,28 @@ class FormController extends Controller
 
         $emails = $version->settings['emails'] ?? [];
         $notify = ($emails['notify']['enabled'] ?? false) && !empty($emails['notify']['recipients']);
-        $confirm = ($emails['confirmation']['enabled'] ?? false) && $built['email'];
+        $confirm = ($emails['confirmation']['enabled'] ?? false)
+            && $built['email']
+            && !$this->confirmationLimited($form, $built['email']);
 
         $sourceUrl = $data['source_url'] ?? null;
 
-        FormSubmission::create([
-            'uuid' => (string) Str::uuid(),
-            'form_id' => $form->id,
-            'form_version_id' => $version->id,
-            'answers' => $built['answers'],
-            'email' => $built['email'],
-            'search_text' => $built['search_text'],
-            'status' => 'new',
-            'source_url' => $sourceUrl && preg_match('/^https?:\/\//i', $sourceUrl) ? $sourceUrl : null,
-            'user_agent' => Str::limit((string) $request->userAgent(), 255, ''),
-            'notify_status' => $notify ? 'pending' : 'not_applicable',
-            'confirmation_status' => $confirm ? 'pending' : 'not_applicable',
-        ]);
+        DB::transaction(function () use ($correlatives, $form, $version, $built, $sourceUrl, $request, $notify, $confirm) {
+            FormSubmission::create([
+                'uuid' => (string) Str::uuid(),
+                'correlative' => $correlatives->next($form, $version->settings ?? []),
+                'form_id' => $form->id,
+                'form_version_id' => $version->id,
+                'answers' => $built['answers'],
+                'email' => $built['email'],
+                'search_text' => $built['search_text'],
+                'status' => 'new',
+                'source_url' => $sourceUrl && preg_match('/^https?:\/\//i', $sourceUrl) ? $sourceUrl : null,
+                'user_agent' => Str::limit((string) $request->userAgent(), 255, ''),
+                'notify_status' => $notify ? 'pending' : 'not_applicable',
+                'confirmation_status' => $confirm ? 'pending' : 'not_applicable',
+            ]);
+        }, 3);
 
         return response()->json(['success' => true], 201);
     }
@@ -84,6 +91,15 @@ class FormController extends Controller
             ->mapWithKeys(fn (string $department) => [$department => ElSalvadorGeography::municipalities($department)]);
 
         return response()->json($map)->header('Cache-Control', 'public, max-age=86400');
+    }
+
+    private function confirmationLimited(Form $form, string $email): bool
+    {
+        return FormSubmission::where('form_id', $form->id)
+            ->where('email', $email)
+            ->where('confirmation_status', '!=', 'not_applicable')
+            ->where('created_at', '>=', now()->subHour())
+            ->count() >= 3;
     }
 
     private function withAgencyOptions(array $fields): array

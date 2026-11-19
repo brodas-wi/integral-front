@@ -13,6 +13,7 @@ class FormSubmission extends Model
 
     protected $fillable = [
         'uuid',
+        'correlative',
         'form_id',
         'form_version_id',
         'answers',

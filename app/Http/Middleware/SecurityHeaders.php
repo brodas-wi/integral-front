@@ -8,85 +8,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SecurityHeaders
 {
-    private array $baseCsp = [
-        'default-src'               => ["'self'"],
-        'script-src'                => ["'self'"],
-        'style-src'                 => ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com'],
-        'img-src'                   => ["'self'", 'data:', 'blob:', 'https:'],
-        'font-src'                  => ["'self'", 'data:', 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'],
-        'connect-src'               => ["'self'"],
-        'media-src'                 => ["'self'", 'blob:'],
-        'object-src'                => ["'none'"],
-        'frame-src'                 => ["'self'", 'https://www.youtube.com', 'https://player.vimeo.com'],
-        'frame-ancestors'           => ["'none'"],
-        'base-uri'                  => ["'self'"],
-        'form-action'               => ["'self'"],
-        'worker-src'                => ["'self'", 'blob:'],
-        'upgrade-insecure-requests' => [],
-    ];
-
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
 
-        $csp = $this->baseCsp;
-
-        $assetUrl  = config('app.asset_url', config('app.url'));
-        $storageUrl = config('app.storage_url', $assetUrl);
-        $adminUrl  = config('app.admin_url', '');
-
-        $csp['img-src'][]     = $assetUrl;
-        $csp['img-src'][]     = $storageUrl;
-        $csp['connect-src'][] = $assetUrl;
-        $csp['frame-src'][]   = $assetUrl;
-
-        if ($adminUrl) {
-            $csp['img-src'][]     = $adminUrl;
-            $csp['connect-src'][] = $adminUrl;
-        }
-
-        if (app()->environment('local')) {
-            $port = config('vite.dev_server_port', 5174);
-            $viteOrigin = "http://127.0.0.1:{$port}";
-            $viteWs     = "ws://127.0.0.1:{$port}";
-
-            $csp['script-src'][]  = $viteOrigin;
-            $csp['script-src'][]  = "'unsafe-inline'"; // necesario en dev por HMR de Vite
-            $csp['style-src'][]   = $viteOrigin;
-            $csp['style-src'][]   = "'unsafe-inline'";
-            $csp['connect-src'][] = $viteOrigin;
-            $csp['connect-src'][] = $viteWs;
-            $csp['font-src'][]    = $viteOrigin;
-
-            unset($csp['upgrade-insecure-requests']);
-        } else {
-            $csp['style-src'][] = "'unsafe-inline'";
-        }
-
-        $response->headers->set('Content-Security-Policy', $this->buildCsp($csp));
+        $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set('X-Content-Type-Options', 'nosniff');
-        $response->headers->set('X-Frame-Options', 'DENY');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-        $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
 
-        if (!app()->environment('local')) {
-            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        if (!$response->headers->has('Content-Security-Policy')) {
+            $response->headers->set('Content-Security-Policy', "frame-ancestors 'self'");
         }
-
-        $response->headers->remove('X-Powered-By');
-        $response->headers->remove('Server');
 
         return $response;
-    }
-
-    private function buildCsp(array $directives): string
-    {
-        $parts = [];
-        foreach ($directives as $directive => $sources) {
-            $parts[] = empty($sources)
-                ? $directive
-                : $directive . ' ' . implode(' ', $sources);
-        }
-        return implode('; ', $parts);
     }
 }

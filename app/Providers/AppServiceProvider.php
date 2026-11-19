@@ -23,8 +23,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RateLimiter::for('form-submissions', fn (Request $request) => [
-            Limit::perMinute(5)->by($request->ip()),
-            Limit::perHour(30)->by($request->ip()),
+            Limit::perMinute(5)->by('minute:' . $request->ip()),
+            Limit::perHour(30)->by('hour:' . $request->ip()),
+            Limit::perHour(300)->by('form:' . $request->route('slug')),
         ]);
     }
 }
