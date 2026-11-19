@@ -54,9 +54,10 @@ async function loadGeography() {
     return geography;
 }
 
-const isSafeRedirect = (url) => /^\/(?!\/)/.test(url) || /^https?:\/\//i.test(url);
+const isSafeRedirect = (url) =>
+    typeof url === "string" && (/^\/(?![\/\\])[^\s\\]*$/.test(url) || /^https?:\/\/[^\s\\]+$/i.test(url));
 
-/* ---------- Controles ---------- */
+const sourceUrl = () => location.href.split("#")[0].slice(0, 2048);
 
 function buildText(field, id, notify) {
     const multiline = field.type === "textarea";
@@ -280,8 +281,6 @@ function createControl(field, uid, onEvent) {
     return control;
 }
 
-/* ---------- Overlay ---------- */
-
 function createShell(trigger) {
     const uid = `fo${++counter}`;
     const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -433,7 +432,8 @@ function renderForm(instance, slug, schema, prefill) {
     }
 
     const alert = h("p", { class: "fo-alert", role: "alert", hidden: true });
-    const submit = h("button", { type: "submit", class: "fo-submit", text: schema.submit_label || "Enviar" });
+    const submitLabel = schema.submit_label || "Enviar";
+    const submit = h("button", { type: "submit", class: "fo-submit", text: submitLabel });
     const honeypot = h(
         "div",
         { class: "fo-hp", "aria-hidden": "true" },
@@ -456,6 +456,7 @@ function renderForm(instance, slug, schema, prefill) {
 
     const openedAt = Date.now();
     let sending = false;
+    let done = false;
 
     const setAlert = (message) => {
         alert.textContent = message || "";
@@ -478,7 +479,7 @@ function renderForm(instance, slug, schema, prefill) {
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
-        if (sending) return;
+        if (sending || done) return;
 
         setAlert("");
         const invalid = controls.filter((control) => check(control));
@@ -510,11 +511,12 @@ function renderForm(instance, slug, schema, prefill) {
                     version_id: schema.version_id,
                     website: honeypot.querySelector("input").value,
                     elapsed_ms: Date.now() - openedAt,
-                    source_url: location.href,
+                    source_url: sourceUrl(),
                 }),
             });
 
             if (response.ok) {
+                done = true;
                 showThanks();
                 return;
             }
@@ -535,6 +537,8 @@ function renderForm(instance, slug, schema, prefill) {
                 first?.focusEl.focus();
             } else if (response.status === 429) {
                 setAlert("Has hecho demasiados intentos. Espera unos minutos e inténtalo de nuevo.");
+            } else if (response.status === 413) {
+                setAlert("La información enviada es demasiado extensa. Reduce el texto e inténtalo de nuevo.");
             } else if (response.status === 404) {
                 setAlert("Este formulario ya no está disponible.");
             } else {
@@ -544,8 +548,8 @@ function renderForm(instance, slug, schema, prefill) {
             setAlert("No pudimos conectarnos. Revisa tu conexión e inténtalo de nuevo.");
         } finally {
             sending = false;
-            submit.disabled = false;
-            submit.textContent = schema.submit_label || "Enviar";
+            submit.textContent = submitLabel;
+            if (!done) submit.disabled = false;
         }
     });
 
