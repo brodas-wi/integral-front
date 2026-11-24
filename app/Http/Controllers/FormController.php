@@ -58,7 +58,11 @@ class FormController extends Controller
         $built = $builder->build($version, $data['values']);
 
         $emails = $version->settings['emails'] ?? [];
-        $notify = ($emails['notify']['enabled'] ?? false) && !empty($emails['notify']['recipients']);
+        $notifyConfig = $emails['notify'] ?? [];
+        $notify = ($notifyConfig['enabled'] ?? false) && (
+            !empty($notifyConfig['recipients'])
+            || (($notifyConfig['mode'] ?? 'all') === 'routed' && !empty($notifyConfig['routing']['groups']))
+        );
         $confirm = ($emails['confirmation']['enabled'] ?? false)
             && $built['email']
             && !$this->confirmationLimited($form, $built['email']);
